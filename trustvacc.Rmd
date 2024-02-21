@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(readr)
 library(ggplot2)
+library(knitr)
 
 ed_levels = c(
   "Primary school",
@@ -46,6 +47,24 @@ d_trustvac = read_csv('../data/trust-vaccines.csv',
    col_factor(ordered = TRUE, levels = likert_levels),
    col_factor(ordered = TRUE, levels = likert_levels)
  ))
+
+# We rebounded the dataframe to this new one and added new columns using mutate
+# We can either add a new column and name it similar to this code 
+#d_trustvac = d_trustvac %>% 
+#  mutate(
+#    govhonest_coded = govhonest %>% as.numeric,
+#    govright_coded = govright %>% as.numeric
+#  )
+
+#Or we can make the original column numeric instead using this code
+d_trustvac = d_trustvac %>% 
+  mutate(
+    across(
+      .cols = c(starts_with('gov'), starts_with('vac')),
+      .fns = as.numeric,
+      .names = '{.col}_coded' # This is if i Want to keep the original columns 
+    )
+  )
 ```
 
 # Demographic characteristics of the sample
@@ -74,3 +93,42 @@ d_trustvac %>%
   geom_bar()
 ```
 
+## Highest educational qualification 
+```{r}
+d_trustvac %>%
+  count(hhedqual)
+
+d_trustvac %>%
+  ggplot(aes(x = hhedqual)) +
+  geom_bar() +
+  coord_flip()
+```
+
+# Desriptive Statistics: Likert Items
+
+```{r}
+# We use tibble to transform it to a dataframe 
+#tibble(
+#  d_trustvac$govhonest, 
+#  as.numeric(d_trustvac$govhonest)) %>% #transforming it to numeric data
+#  kable # to transform it to a table as follows
+
+trustvac_likert_summary = d_trustvac %>%
+  select(ends_with('_coded')) %>%
+  lapply( #This goes through each column of th dataframe 
+    median, na.rm = TRUE
+  ) 
+trustvac_likert_summary
+
+d_trustvac_likert_summary = tibble(
+  Item = trustvac_likert_summary %>% names, 
+  Median = trustvac_likert_summary %>% unlist
+)
+
+d_trustvac_likert_summary
+
+d_trustvac_likert_summary %>%
+  ggplot(aes(x = Item, y = Median)) +
+  geom_point() +
+  coord_flip()
+```
