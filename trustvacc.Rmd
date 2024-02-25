@@ -235,3 +235,26 @@ d_trustvac %>%
   ggplot(aes(x = age, y = vac_attitude)) +
   geom_jitter(size = 0.5)
 ```
+
+
+```{r}
+d_trustvac %>%
+  t.test (
+    vac_attitude ~ Female,
+    var.equal = FALSE,
+    data = .
+  )
+```
+
+```{r}
+d_trustvac %>%
+  mutate(Female = Female %>% as.numeric) %>%
+  cor.test(~ vac_attitude + Female, data =.) #Weak statistically non-significant correlation between female gender and attitude towards vaccines.
+
+d_trustvac %>%
+  cor.test(~ vac_attitude + gov_trust, data=.) #Weak statistically significant correlation between trust in government and attitude towards vaccines.
+
+d_trustvac %>%
+  cor.test(~ vac_attitude + age, data=.) #Weak statistically moderate correlation betweenage and attitude towards vaccines.
+```
+
