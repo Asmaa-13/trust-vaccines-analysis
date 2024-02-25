@@ -257,4 +257,31 @@ d_trustvac %>%
 d_trustvac %>%
   cor.test(~ vac_attitude + age, data=.) #Weak statistically moderate correlation betweenage and attitude towards vaccines.
 ```
+```{r}
+# We want vaccines attitude to be predicted from age 
+d_trustvac %>%
+  mutate(Female = Female %>% as.numeric) %>%
+  lm(vac_attitude ~ age + gov_trust + Female , data = .) %>%
+  summary
+```
+Using this code first:
 
+d_trustvac %>%
+  lm(vac_attitude ~ age, data = .)
+  The results tell us that every year a person gets older, their positive attitude towards vaccines goes up by 0.01358 
+R-square: is the square of the correlation between the predicted and the actual values for vaccine positivity.
+So, here it is saying that over 6% of the variation in vaccine attitude is explained by or can be predicted by age.
+
+Moving on to adding government trust:
+
+d_trustvac %>%
+  lm(vac_attitude ~ age + gov_trust, data = .)
+For every point somebody's government trust is higher from 1 to 5, their positvity towards vaccines to go up by 0.145400
+
+
+Adding Female 
+d_trustvac %>%
+  lm(vac_attitude ~ age + gov_trust + Female, data = .)
+  
+Being female reduces the average or predicted vaccines reduces positivity by 0.0565.
+We can say that after we added age and government trust, gender has no statistically significant power. 
